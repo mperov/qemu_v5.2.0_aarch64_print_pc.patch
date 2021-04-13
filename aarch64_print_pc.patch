@@ -1,0 +1,37 @@
+diff --git a/target/arm/helper.h b/target/arm/helper.h
+index ff8148ddc6..c7ef8fce7c 100644
+--- a/target/arm/helper.h
++++ b/target/arm/helper.h
+@@ -925,6 +925,7 @@ DEF_HELPER_FLAGS_5(neon_sqrdmulh_h, TCG_CALL_NO_RWG,
+                    void, ptr, ptr, ptr, ptr, i32)
+ DEF_HELPER_FLAGS_5(neon_sqrdmulh_s, TCG_CALL_NO_RWG,
+                    void, ptr, ptr, ptr, ptr, i32)
++DEF_HELPER_1(print_pc, void, env)
+ 
+ #ifdef TARGET_AARCH64
+ #include "helper-a64.h"
+diff --git a/target/arm/op_helper.c b/target/arm/op_helper.c
+index ff91fe6121..a6aa2148bb 100644
+--- a/target/arm/op_helper.c
++++ b/target/arm/op_helper.c
+@@ -954,3 +954,8 @@ void HELPER(probe_access)(CPUARMState *env, target_ulong ptr,
+                      access_type, mmu_idx, ra);
+     }
+ }
++
++void HELPER(print_pc)(CPUARMState *env)
++{
++    printf("current pc: %lx\n", env->pc);
++}
+diff --git a/target/arm/translate-a64.c b/target/arm/translate-a64.c
+index 2e3fdfdf6b..bc4cf9af1a 100644
+--- a/target/arm/translate-a64.c
++++ b/target/arm/translate-a64.c
+@@ -14821,6 +14821,7 @@ static void aarch64_tr_translate_insn(DisasContextBase *dcbase, CPUState *cpu)
+         dc->base.is_jmp = DISAS_NORETURN;
+     } else {
+         disas_a64_insn(env, dc);
++        gen_helper_print_pc(cpu_env);
+     }
+ 
+     translator_loop_temp_check(&dc->base);
